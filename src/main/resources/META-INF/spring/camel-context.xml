@@ -9,14 +9,22 @@
 
   <camelContext xmlns="http://camel.apache.org/schema/spring">
     <dataFormats>
-      <jaxb id="domain" contextPath="java.org.example.genClasses"/>
+      <jaxb id="domain" contextPath="org.example.genClasses"/>
     </dataFormats>
     <route>
       <from uri="file:src/data?noop=true"/>
+      <bean ref="org.example.PrintSomeShit"/>
       <choice>
         <when>
           <xpath>/person/city = 'London'</xpath>
           <log message="UK message"/>
+          <unmarshal>
+            <custom ref="domain"/>
+          </unmarshal>
+          <bean ref="org.example.PrintSomeShit"/>
+          <marshal>
+            <custom ref="domain"/>
+          </marshal>
           <to uri="file:target/messages/uk"/>
         </when>
         <otherwise>
@@ -24,12 +32,7 @@
           <to uri="file:target/messages/others"/>
         </otherwise>
       </choice>
-    </route>
-    <route>
-      <from uri="file:src/data?noop=true"/>
-      <unmarshal>
-        <custom ref="domain"/>
-      </unmarshal>
+
     </route>
   </camelContext>
 

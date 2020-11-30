@@ -150,4 +150,13 @@ public class PersonType {
         this.user = value;
     }
 
+    @Override
+    public String toString() {
+        return "PersonType{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", city='" + city + '\'' +
+                ", user='" + user + '\'' +
+                '}';
+    }
 }
