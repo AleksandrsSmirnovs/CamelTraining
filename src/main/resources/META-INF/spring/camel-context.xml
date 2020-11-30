@@ -7,33 +7,41 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-  <camelContext xmlns="http://camel.apache.org/schema/spring">
-    <dataFormats>
-      <jaxb id="domain" contextPath="org.example.genClasses"/>
-    </dataFormats>
-    <route>
-      <from uri="file:src/data?noop=true"/>
-      <bean ref="org.example.PrintSomeShit"/>
-      <choice>
-        <when>
-          <xpath>/person/city = 'London'</xpath>
-          <log message="UK message"/>
-          <unmarshal>
-            <custom ref="domain"/>
-          </unmarshal>
-          <bean ref="org.example.PrintSomeShit"/>
-          <marshal>
-            <custom ref="domain"/>
-          </marshal>
-          <to uri="file:target/messages/uk"/>
-        </when>
-        <otherwise>
-          <log message="Other message"/>
-          <to uri="file:target/messages/others"/>
-        </otherwise>
-      </choice>
-
-    </route>
-  </camelContext>
+    <camelContext xmlns="http://camel.apache.org/schema/spring">
+        <dataFormats>
+            <jaxb id="domain" contextPath="org.example.genClasses"/>
+            <json id="json" library="Jackson"/>
+        </dataFormats>
+        <route>
+            <from uri="file:src/data?noop=true"/>
+            <choice>
+                <when>
+                    <xpath>/person/city = 'London'</xpath>
+                    <log message="UK message"/>
+                    <unmarshal>
+                        <custom ref="domain"/>
+                    </unmarshal>
+                    <bean ref="org.example.PrintSomeShit"/>
+                    <marshal>
+                        <json library="Jackson" prettyPrint="true"/>
+                    </marshal>
+                    <convertBodyTo type="String"/>
+                    <bean ref="org.example.PrintSomeShit"/>
+                    <unmarshal>
+                        <json library="Jackson" prettyPrint="true" unmarshalTypeName="org.example.genClasses.PersonType"/>
+                    </unmarshal>
+                    <bean ref="org.example.PrintSomeShit"/>
+                    <marshal>
+                        <custom ref="domain"/>
+                    </marshal>
+                    <to uri="file:target/messages/newXml"/>
+                </when>
+                <otherwise>
+                    <log message="Other message"/>
+                    <to uri="file:target/messages/others"/>
+                </otherwise>
+            </choice>
+        </route>
+    </camelContext>
 
 </beans>
