@@ -28,7 +28,8 @@
                     <convertBodyTo type="String"/>
                     <bean ref="org.example.PrintSomeShit"/>
                     <unmarshal>
-                        <json library="Jackson" prettyPrint="true" unmarshalTypeName="org.example.genClasses.PersonType"/>
+                        <json library="Jackson" prettyPrint="true"
+                              unmarshalTypeName="org.example.genClasses.PersonType"/>
                     </unmarshal>
                     <bean ref="org.example.PrintSomeShit"/>
                     <marshal>
@@ -41,6 +42,23 @@
                     <to uri="file:target/messages/others"/>
                 </otherwise>
             </choice>
+        </route>
+        <route>
+            <from uri="file:src/mailTest?noop=true"/>
+            <setHeader name="from">
+                <constant>smirnoffchess@gmail.com</constant>
+            </setHeader>
+            <setHeader name="to">
+                <constant>smirnoffchess@gmail.com</constant>
+            </setHeader>
+            <setHeader name="subject">
+                <constant>Hello</constant>
+            </setHeader>
+            <setHeader name="contentType">
+                <constant>text/plain;charset=UTF-8</constant>
+            </setHeader>
+            <!-- <attachment id="attachment.zip" uri="resource:file:test.zip"/> -->
+            <to uri="smtp://smtp.google.com?password=???#username=smirnoffchess@gmail.com"/>
         </route>
     </camelContext>
 
